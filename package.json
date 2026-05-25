@@ -2,6 +2,9 @@
   "name": "ugc-script-generator-pro",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "15.3.2",
+    "next": "15.5.18",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
