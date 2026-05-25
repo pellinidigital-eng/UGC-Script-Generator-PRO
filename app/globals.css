@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  background: #07080d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: #f7f7fb;
+  background:
+    radial-gradient(circle at 12% 5%, rgba(94, 231, 223, .16), transparent 28rem),
+    radial-gradient(circle at 86% 0%, rgba(255, 107, 122, .12), transparent 26rem),
+    linear-gradient(145deg, #07080d 0%, #10131d 46%, #090b11 100%);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  color: #07080d;
+  background: #b7ff5f;
+}
+
+.premium-border {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .035));
+  box-shadow: 0 22px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+  backdrop-filter: blur(18px);
+}
+
+.premium-border::before {
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(94, 231, 223, .26), rgba(183, 255, 95, .08), rgba(255, 107, 122, .2));
+  content: "";
+  opacity: .65;
+}
+
+.input-shell {
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: rgba(7, 8, 13, .58);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.input-shell:focus-within {
+  border-color: rgba(183, 255, 95, .55);
+  background: rgba(7, 8, 13, .78);
+  box-shadow: 0 0 0 4px rgba(183, 255, 95, .08);
+}
+
+.cinematic-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .06);
+}
+
+.cinematic-skeleton::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .14), transparent);
+  animation: scan 1.35s ease-in-out infinite;
+  content: "";
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
