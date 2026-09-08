@@ -39,3 +39,5 @@ PELLINIDIGITAL_TOOL_ID=ugc-script-generator
 ```
 
 `PELLINIDIGITAL_TOOL_ACCESS_SECRET` deve essere configurato solo nell'ambiente Vercel e non deve essere inserito nel repository.
+In questo repository il secret e' specifico di UGC Script Generator PRO: non deve essere riutilizzato per altri tool Vercel PelliniDigital.
+Ogni futuro tool deve avere un secret indipendente, e WordPress deve firmare il token usando il secret corrispondente al tool richiesto.
