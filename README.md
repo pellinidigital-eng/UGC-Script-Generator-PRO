@@ -23,3 +23,21 @@ npm run build
 ## Deploy
 
 Il progetto e' pronto per Vercel: importa la cartella, installa le dipendenze da `package.json` e usa il comando build standard `next build`.
+
+## Accesso protetto
+
+Il tool accetta accessi dal portale WordPress PelliniDigital tramite `GET /access?token=...`.
+Il token WordPress viene verificato lato server e scambiato con un cookie `HttpOnly` firmato, valido 6 ore.
+
+Variabili ambiente richieste:
+
+```bash
+PELLINIDIGITAL_TOOL_ACCESS_SECRET=
+PELLINIDIGITAL_TOOL_ACCESS_KEY_ID=pd-tool-access-v1
+PELLINIDIGITAL_TOKEN_ISSUER=https://pellinidigital.it
+PELLINIDIGITAL_TOOL_ID=ugc-script-generator
+```
+
+`PELLINIDIGITAL_TOOL_ACCESS_SECRET` deve essere configurato solo nell'ambiente Vercel e non deve essere inserito nel repository.
+In questo repository il secret e' specifico di UGC Script Generator PRO: non deve essere riutilizzato per altri tool Vercel PelliniDigital.
+Ogni futuro tool deve avere un secret indipendente, e WordPress deve firmare il token usando il secret corrispondente al tool richiesto.
