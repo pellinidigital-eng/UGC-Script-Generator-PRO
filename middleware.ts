@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ACCESS_COOKIE_NAME, verifySessionCookie } from "@/lib/protected-access";
 
-const PUBLIC_PATHS = new Set(["/access", "/access-denied"]);
+const PUBLIC_PATHS = new Set(["/access", "/access-denied", "/demo"]);
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
