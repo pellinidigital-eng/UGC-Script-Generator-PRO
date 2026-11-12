@@ -17,7 +17,7 @@ import {
   type Tone
 } from "@/lib/generator";
 
-const VIRAL_ANALYZER_CHECKOUT_URL = "https://pellinidigital.com/cart/add?id=53617392714071&quantity=1&return_to=/checkout";
+const VIRAL_ANALYZER_INFO_URL = "https://www.pellinidigital.it/tool-risorse/";
 
 const platforms: Platform[] = ["TikTok", "Instagram Reels", "Meta Ads", "YouTube Shorts"];
 const durations: Duration[] = ["15 sec", "30 sec", "60 sec"];
@@ -217,12 +217,12 @@ function PremiumModal({ open, onClose }: { open: boolean; onClose: () => void })
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
           <a
-            href={VIRAL_ANALYZER_CHECKOUT_URL}
+            href={VIRAL_ANALYZER_INFO_URL}
             target="_blank"
             rel="noreferrer"
             className="rounded-lg bg-acid px-5 py-4 text-center text-sm font-black text-obsidian shadow-button transition hover:scale-[1.01]"
           >
-            Sblocca Viral Reel Analyzer PRO
+            Scopri Viral Reel Analyzer PRO
           </a>
           <button
             type="button"
