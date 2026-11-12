@@ -476,15 +476,31 @@ function generateOnce(input: ScriptInput, seed: number): ScriptOutput {
   const rng = createRng(seed);
   const pattern = pickWeighted(rng, structures);
   const angle = pick(rng, creativeAngles);
-  const hook = fill(pick(rng, hookFrames.concat(openings)), input, rng);
-  let hookAB = fill(pick(rng, hookFrames.concat(openings)), input, rng);
-  if (hookAB === hook) hookAB = fill(pick(rng, openings), input, rng);
+  const hook = `Se ${sanitizeInput(input.problem, "questo problema").replace(/[.!?]+$/, "")} ti riguarda, guarda ${sanitizeInput(input.product, "questa soluzione")}.`;
+  let hookAB = `Cerchi ${sanitizeInput(input.desire, "una soluzione")} ? Ecco cosa valutare in ${sanitizeInput(input.product, "questa proposta")}.`.replace(/\\s+\\?/g, "?");
 
   const bucket = ctaBucket(input.goal);
   const finalCta = pick(rng, ctas[bucket]);
   const alternateBucket = pick(rng, Object.keys(ctas).filter((key) => key !== bucket) as Array<keyof typeof ctas>);
   const alternateCta = pick(rng, ctas[alternateBucket]);
-  const script = cleanForbidden(scriptBody(input, rng, hook, finalCta, pattern), rng);
+  // Script parlato breve, centrato sul brief: niente claim inventati o frasi tagliate a metà.
+  const productLabel = sanitizeInput(input.product, "il prodotto");
+  const painLabel = sanitizeInput(input.problem, "il problema indicato");
+  const desireLabel = sanitizeInput(input.desire, "il risultato desiderato");
+  const benefitLabel = sanitizeInput(input.benefit, "il beneficio proposto");
+  const offerLabel = input.offer.trim();
+  const seconds = durationSeconds(input.duration);
+  const compactHook = `Hai presente questo problema: ${painLabel.replace(/[.!?]+$/, "")}?`;
+  const shortCta = input.goal === "DM" ? "Scrivici in DM per i dettagli." : input.goal === "Awareness" ? "Salva il video per ricordarlo." : "Scopri i dettagli del prodotto.";
+  const script = [
+    compactHook,
+    `Ti presento ${productLabel}.`,
+    `L'obiettivo è ${desireLabel.replace(/[.!?]+$/, "")}.`,
+    seconds >= 30 ? `Il beneficio indicato è: ${benefitLabel.replace(/[.!?]+$/, "")}.` : "",
+    seconds >= 60 ? `Guarda da vicino il prodotto e verifica le informazioni prima di scegliere.` : "",
+    offerLabel && seconds >= 30 ? `L'offerta indicata è: ${offerLabel.replace(/[.!?]+$/, "")}.` : "",
+    shortCta
+  ].filter(Boolean).join(" ").replace(/\\s+/g, " ").trim();
   const product = sanitizeInput(input.product, "Launch");
   const campaignName = `${pick(rng, campaignAdjectives)} ${hash(product + seed).toString(36).slice(0, 4).toUpperCase()}`;
   const hashtags = makeHashtags(input, rng);
@@ -512,7 +528,7 @@ function generateOnce(input: ScriptInput, seed: number): ScriptOutput {
     hook,
     hookAB,
     script,
-    timeline: makeTimeline(input, rng, hook, finalCta),
+    timeline: makeTimeline(input, rng, compactHook, shortCta),
     scenes,
     shots,
     cameraMoves: [pick(rng, cameraMoves), pick(rng, cameraMoves), pick(rng, cameraMoves)],
@@ -525,10 +541,10 @@ function generateOnce(input: ScriptInput, seed: number): ScriptOutput {
     ],
     finalCta,
     alternateCta,
-    caption: cleanForbidden(`${pick(rng, captionOpeners)} ${script.split(".").slice(1, 4).join(".").trim()}. ${finalCta} ${hashtags.slice(0, 5).join(" ")}`, rng),
+    caption: `${productLabel}: ${painLabel}. ${desireLabel}. ${shortCta} ${hashtags.slice(0, 5).join(" ")}`,
     hashtags,
     heygenPrompt: `Avatar ${input.creator.toLowerCase()}, stile ${input.style.toLowerCase()}, energia ${input.energy.toLowerCase()}, voce in italiano ${toneLine(input.tone)}. Leggi lo script con pause naturali, sguardo in camera e micro espressioni coerenti con un video ${input.platform} da ${input.duration}.`,
-    canvaPrompt: `Crea storyboard verticale 9:16 premium dark/glass, overlay leggibili, glow elegante, scene UGC per ${input.platform}. Inserisci frame: hook, problema, prova, beneficio, CTA. Mood ${input.style}, ritmo ${energyPace(input.energy)}.`,
+    canvaPrompt: `Crea storyboard verticale 9:16 premium dark/glass, overlay leggibili, glow elegante, scene UGC per ${input.platform}. Inserisci frame: hook, problema, prova, beneficio, CTA. Mood ${input.style}, andamento ${energyPace(input.energy)}.`,
     elevenLabsPrompt: `Voce italiana ${input.creator.toLowerCase()}, timbro premium, ritmo ${energyPace(input.energy)}, tono ${input.tone.toLowerCase()}. Evita enfasi artificiale, usa pause brevi dopo hook e prima della CTA.`,
     storyboard: [
       `Frame 1: hook in primo piano, ${pick(rng, cameraMoves)}.`,
