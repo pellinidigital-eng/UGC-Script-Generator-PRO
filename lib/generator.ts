@@ -477,7 +477,7 @@ function generateOnce(input: ScriptInput, seed: number): ScriptOutput {
   const pattern = pickWeighted(rng, structures);
   const angle = pick(rng, creativeAngles);
   const hook = `Se ${sanitizeInput(input.problem, "questo problema").replace(/[.!?]+$/, "")} ti riguarda, guarda ${sanitizeInput(input.product, "questa soluzione")}.`;
-  let hookAB = `Cerchi ${sanitizeInput(input.desire, "una soluzione")} ? Ecco cosa valutare in ${sanitizeInput(input.product, "questa proposta")}.`.replace(/\\s+\\?/g, "?");
+  let hookAB = `Cerchi ${sanitizeInput(input.desire, "una soluzione")} ? Ecco cosa valutare in ${sanitizeInput(input.product, "questa proposta")}.`.replace(/\s+\?/g, "?");
 
   const bucket = ctaBucket(input.goal);
   const finalCta = pick(rng, ctas[bucket]);
@@ -500,7 +500,7 @@ function generateOnce(input: ScriptInput, seed: number): ScriptOutput {
     seconds >= 60 ? `Guarda da vicino il prodotto e verifica le informazioni prima di scegliere.` : "",
     offerLabel && seconds >= 30 ? `L'offerta indicata è: ${offerLabel.replace(/[.!?]+$/, "")}.` : "",
     shortCta
-  ].filter(Boolean).join(" ").replace(/\\s+/g, " ").trim();
+  ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
   const product = sanitizeInput(input.product, "Launch");
   const campaignName = `${pick(rng, campaignAdjectives)} ${hash(product + seed).toString(36).slice(0, 4).toUpperCase()}`;
   const hashtags = makeHashtags(input, rng);
