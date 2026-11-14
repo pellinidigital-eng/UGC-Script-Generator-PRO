@@ -94,3 +94,9 @@ button {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* iPhone QA 12/11: prevent grid children and long user text from widening the viewport. */
+html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+main, main > *, main section, main aside, main article { min-width: 0; }
+.premium-border, .premium-border * { overflow-wrap: anywhere; }
+input, textarea { min-width: 0; max-width: 100%; }
