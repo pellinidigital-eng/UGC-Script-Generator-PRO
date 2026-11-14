@@ -452,7 +452,11 @@ export function rememberOutput(output: ScriptOutput) {
   if (typeof window === "undefined") return;
   const recent = emptyMemory();
   const next = [signature(output), ...recent].slice(0, 12);
-  window.localStorage.setItem(memoryKey, JSON.stringify(next));
+  try {
+    window.localStorage.setItem(memoryKey, JSON.stringify(next));
+  } catch {
+    // Storage may be disabled or full; generation must remain usable.
+  }
 }
 
 function tooCloseToInput(input: ScriptInput, output: ScriptOutput) {
