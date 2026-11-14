@@ -442,7 +442,8 @@ function signature(output: ScriptOutput) {
 function emptyMemory(): string[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(window.localStorage.getItem(memoryKey) ?? "[]") as string[];
+    const stored: unknown = JSON.parse(window.localStorage.getItem(memoryKey) ?? "[]");
+    return Array.isArray(stored) ? stored.filter((item): item is string => typeof item === "string") : [];
   } catch {
     return [];
   }
