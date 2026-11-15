@@ -1,5 +1,5 @@
 // Offline regression for UGC durations, malformed browser storage and brief grounding.
-// Run: npm ci && node --test tests/generator.test.cjs
+// Run: npm install --no-package-lock && node --test tests/generator.test.cjs
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -35,4 +35,25 @@ test('browser storage failures never interrupt remembering an output', () => {
  global.window = { localStorage: { getItem: () => '{bad json', setItem: () => { throw Error('quota'); } } };
  try { assert.doesNotThrow(() => generator.rememberOutput({ hook: 'test' })); }
  finally { if (previous === undefined) delete global.window; else global.window = previous; }
+});
+
+test('malformed but valid storage data is ignored without crashing', () => {
+ const previous = global.window;
+ for (const stored of ['{}', '42', 'null', '[1, false, {"bad": true}]']) {
+  let saved;
+  global.window = { localStorage: { getItem: () => stored, setItem: (_key, value) => { saved = JSON.parse(value); } } };
+  try {
+   assert.doesNotThrow(() => generator.rememberOutput({ hook: 'test', pattern: 'test', finalCta: 'ok', creativeAngle: 'angle' }));
+   assert.ok(Array.isArray(saved) && saved.length === 1 && typeof saved[0] === 'string');
+  } finally { if (previous === undefined) delete global.window; else global.window = previous; }
+ }
+});
+test('storage read exception does not prevent saving output', () => {
+ const previous = global.window;
+ let saved;
+ global.window = { localStorage: { getItem: () => { throw Error('denied'); }, setItem: (_key, value) => { saved = JSON.parse(value); } } };
+ try {
+  assert.doesNotThrow(() => generator.rememberOutput({ hook: 'test', pattern: 'test', finalCta: 'ok', creativeAngle: 'angle' }));
+  assert.equal(saved.length, 1);
+ } finally { if (previous === undefined) delete global.window; else global.window = previous; }
 });
