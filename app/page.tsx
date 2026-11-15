@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   defaultInput,
   examples,
@@ -17,7 +17,7 @@ import {
   type Tone
 } from "@/lib/generator";
 
-const VIRAL_ANALYZER_CHECKOUT_URL = "https://pellinidigital.com/cart/add?id=53617392714071&quantity=1&return_to=/checkout";
+const VIRAL_ANALYZER_INFO_URL = "https://www.pellinidigital.it/tool-risorse/";
 
 const platforms: Platform[] = ["TikTok", "Instagram Reels", "Meta Ads", "YouTube Shorts"];
 const durations: Duration[] = ["15 sec", "30 sec", "60 sec"];
@@ -217,12 +217,12 @@ function PremiumModal({ open, onClose }: { open: boolean; onClose: () => void })
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
           <a
-            href={VIRAL_ANALYZER_CHECKOUT_URL}
+            href={VIRAL_ANALYZER_INFO_URL}
             target="_blank"
             rel="noreferrer"
             className="rounded-lg bg-acid px-5 py-4 text-center text-sm font-black text-obsidian shadow-button transition hover:scale-[1.01]"
           >
-            Sblocca Viral Reel Analyzer PRO
+            Scopri Viral Reel Analyzer PRO
           </a>
           <button
             type="button"
@@ -269,20 +269,32 @@ export default function Home() {
   const [copied, setCopied] = useState<CopyState>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [variant, setVariant] = useState(0);
+  const generationToken = useRef(0);
 
   const completion = useMemo(() => {
     const required = [input.product, input.niche, input.target, input.problem, input.desire, input.benefit];
     return Math.round((required.filter((item) => item.trim()).length / required.length) * 100);
   }, [input]);
 
-  const canGenerate = completion >= 84;
+  const canGenerate = completion === 100;
 
   function update<K extends keyof ScriptInput>(key: K, value: ScriptInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
+    generationToken.current += 1;
+    setLoading(false);
+    setOutput(null);
+    setCopied({});
   }
 
   async function copy(id: string, text: string) {
-    await navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Clipboard access can be denied in embedded previews or insecure contexts.
+      // Keep the output selectable instead of showing a false success state.
+      setCopied((current) => ({ ...current, [id]: false }));
+      return;
+    }
     setCopied((current) => ({ ...current, [id]: true }));
     window.setTimeout(() => {
       setCopied((current) => ({ ...current, [id]: false }));
@@ -291,9 +303,11 @@ export default function Home() {
 
   function runGenerate(nextVariant = variant + 1) {
     if (!canGenerate) return;
+    const token = ++generationToken.current;
     setLoading(true);
     setVariant(nextVariant);
     window.setTimeout(() => {
+      if (token !== generationToken.current) return;
       const next = generateScript(input, nextVariant);
       rememberOutput(next);
       setOutput(next);
@@ -302,8 +316,11 @@ export default function Home() {
   }
 
   function loadExample(index = Math.floor(Math.random() * examples.length)) {
+    generationToken.current += 1;
+    setLoading(false);
     setInput(examples[index]);
     setOutput(null);
+    setCopied({});
   }
 
   function exportText() {
