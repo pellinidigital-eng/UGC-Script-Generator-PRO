@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   defaultInput,
   examples,
@@ -269,6 +269,7 @@ export default function Home() {
   const [copied, setCopied] = useState<CopyState>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [variant, setVariant] = useState(0);
+  const generationToken = useRef(0);
 
   const completion = useMemo(() => {
     const required = [input.product, input.niche, input.target, input.problem, input.desire, input.benefit];
@@ -279,6 +280,8 @@ export default function Home() {
 
   function update<K extends keyof ScriptInput>(key: K, value: ScriptInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
+    generationToken.current += 1;
+    setLoading(false);
     setOutput(null);
     setCopied({});
   }
@@ -293,9 +296,11 @@ export default function Home() {
 
   function runGenerate(nextVariant = variant + 1) {
     if (!canGenerate) return;
+    const token = ++generationToken.current;
     setLoading(true);
     setVariant(nextVariant);
     window.setTimeout(() => {
+      if (token !== generationToken.current) return;
       const next = generateScript(input, nextVariant);
       rememberOutput(next);
       setOutput(next);
@@ -304,8 +309,11 @@ export default function Home() {
   }
 
   function loadExample(index = Math.floor(Math.random() * examples.length)) {
+    generationToken.current += 1;
+    setLoading(false);
     setInput(examples[index]);
     setOutput(null);
+    setCopied({});
   }
 
   function exportText() {
