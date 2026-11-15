@@ -287,7 +287,14 @@ export default function Home() {
   }
 
   async function copy(id: string, text: string) {
-    await navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Clipboard access can be denied in embedded previews or insecure contexts.
+      // Keep the output selectable instead of showing a false success state.
+      setCopied((current) => ({ ...current, [id]: false }));
+      return;
+    }
     setCopied((current) => ({ ...current, [id]: true }));
     window.setTimeout(() => {
       setCopied((current) => ({ ...current, [id]: false }));
