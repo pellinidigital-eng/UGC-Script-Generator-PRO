@@ -57,3 +57,25 @@ test('storage read exception does not prevent saving output', () => {
   assert.equal(saved.length, 1);
  } finally { if (previous === undefined) delete global.window; else global.window = previous; }
 });
+
+
+test('spoken copy respects brief and duration without inventing claims', () => {
+ const scenarios = [
+  { product: 'Bavetta artigianale', problem: 'Regali impersonali', desire: 'Un regalo speciale', benefit: 'Cotone morbido', offer: 'Personalizzazione' },
+  { product: 'Agenda digitale', problem: 'Scadenze dimenticate', desire: 'Pianificare meglio', benefit: 'Vista settimanale', offer: 'Download PDF' },
+  { product: 'Lezioni di chitarra', problem: 'Esercizi confusi', desire: 'Suonare con sicurezza', benefit: 'Lezioni progressive', offer: '' }
+ ];
+ for (const brief of scenarios) {
+  const outputs = ['15 sec', '30 sec', '60 sec'].map(duration => generator.generateScript({ ...base, ...brief, duration }));
+  for (const output of outputs) {
+   assert.ok(output.script.includes(brief.product), 'spoken script must mention actual product');
+   assert.ok(output.script.includes(brief.problem), 'spoken script must use stated problem');
+   assert.ok(output.script.includes(brief.desire), 'spoken script must use stated desire');
+   assert.ok(!/guadagn[ai] garantiti|risultati garantiti/i.test(output.script), 'unsupported guarantee');
+  }
+  assert.ok(!outputs[0].script.includes('Il beneficio indicato'), '15s script should stay concise');
+  assert.ok(outputs[1].script.includes(brief.benefit), '30s script must mention stated benefit');
+  assert.ok(outputs[2].script.includes(brief.benefit), '60s script must mention stated benefit');
+  if (brief.offer) assert.ok(outputs[1].script.includes(brief.offer), '30s script must preserve offer');
+ }
+});
