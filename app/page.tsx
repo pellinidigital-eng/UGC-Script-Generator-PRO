@@ -275,7 +275,7 @@ export default function Home() {
     return Math.round((required.filter((item) => item.trim()).length / required.length) * 100);
   }, [input]);
 
-  const canGenerate = completion >= 84;
+  const canGenerate = completion === 100;
 
   function update<K extends keyof ScriptInput>(key: K, value: ScriptInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
