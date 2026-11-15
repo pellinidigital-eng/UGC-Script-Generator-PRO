@@ -279,6 +279,8 @@ export default function Home() {
 
   function update<K extends keyof ScriptInput>(key: K, value: ScriptInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
+    setOutput(null);
+    setCopied({});
   }
 
   async function copy(id: string, text: string) {
